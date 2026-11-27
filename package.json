@@ -15,8 +15,9 @@
     "node": ">=22.22.0"
   },
   "scripts": {
-    "dev": "slidev showcase/slides.md --open",
-    "build": "slidev build showcase/slides.md"
+    "dev": "NODE_OPTIONS=--dns-result-order=ipv4first slidev showcase/slides.md --open",
+    "build": "slidev build showcase/slides.md",
+    "diagrams": "node showcase/generate-diagrams.mjs"
   },
   "devDependencies": {
     "@slidev/cli": "^53.2.0",

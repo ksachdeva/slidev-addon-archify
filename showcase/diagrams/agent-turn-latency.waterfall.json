@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "diagram_type": "waterfall",
+  "meta": {
+    "title": "Where did 2.4 seconds go?",
+    "subtitle": "Illustrative turn trace: memory, RAG, and tool execution overlap, but the tool straggler blocks synthesis",
+    "output": "agent-turn-latency.html",
+    "evidence": "illustrative",
+    "unit": "ms",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase"
+  },
+  "spans": [
+    { "id": "turn", "name": "POST /agent/turn", "service": "orchestrator", "start": 0, "end": 2400, "detail": "Total wall-clock turn time until first grounded answer completes." },
+    { "id": "guard", "name": "Input guardrail", "service": "guardrail", "start": 0, "duration": 80, "parent": "turn" },
+    { "id": "plan", "name": "LLM plan + tool select", "service": "reasoning-llm", "start": 80, "duration": 540, "parent": "turn" },
+    { "id": "mem", "name": "Load session memory", "service": "memory", "start": 620, "duration": 90, "parent": "turn" },
+    { "id": "rag", "name": "Hybrid retrieve + rerank", "service": "retriever", "start": 620, "duration": 420, "parent": "turn" },
+    { "id": "tool", "name": "Sandboxed tool call", "service": "tool-sandbox", "start": 620, "duration": 860, "parent": "turn" },
+    { "id": "synth", "name": "LLM grounded synthesis", "service": "reasoning-llm", "start": 1480, "duration": 920, "parent": "turn" }
+  ]
+}

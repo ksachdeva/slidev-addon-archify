@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AI Agent Runtime — Optimized",
+    "subtitle": "Semantic cache short-circuits repeat intents while speculative prefetch hides tool latency",
+    "output": "agent-turn-optimized.html",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "animation": "trace"
+  },
+  "components": [
+    { "id": "user", "type": "external", "label": "User", "sublabel": "Streaming UI", "pos": [40, 215], "size": [120, 56] },
+    { "id": "guardrail", "type": "security", "label": "Guardrail", "sublabel": "PII + policy gate", "pos": [210, 215], "size": [130, 56], "tag": "ingress" },
+    { "id": "orchestrator", "type": "backend", "label": "Orchestrator", "sublabel": "Streaming loop", "pos": [400, 215], "size": [140, 58], "emphasis": true },
+    { "id": "semcache", "type": "database", "label": "Semantic Cache", "sublabel": "Embedding hit", "pos": [400, 60], "size": [140, 54], "tag": "new", "emphasis": true },
+    { "id": "prefetch", "type": "messagebus", "label": "Speculative Prefetch", "sublabel": "Parallel warm-up", "pos": [400, 365], "size": [140, 54], "tag": "new", "emphasis": true },
+    { "id": "llm", "type": "cloud", "label": "Reasoning LLM", "sublabel": "Prompt-cached", "pos": [630, 60], "size": [140, 56], "tag": "TTFT -72%" },
+    { "id": "retriever", "type": "backend", "label": "Hybrid Retriever", "sublabel": "Dense + BM25", "pos": [630, 215], "size": [140, 56] },
+    { "id": "vectordb", "type": "database", "label": "Vector Store", "sublabel": "HNSW index", "pos": [845, 215], "size": [130, 56], "tag": "embeddings" },
+    { "id": "sandbox", "type": "security", "label": "Tool Sandbox", "sublabel": "Pre-warmed pool", "pos": [630, 365], "size": [140, 56], "tag": "isolated" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Fast-Path Control Plane", "wraps": ["guardrail", "orchestrator", "semcache", "prefetch"] },
+    { "kind": "security-group", "label": "Inference & Execution", "wraps": ["llm", "retriever", "vectordb", "sandbox"] }
+  ],
+  "connections": [
+    { "id": "opt-user-guard", "from": "user", "to": "guardrail", "label": "prompt", "variant": "emphasis" },
+    { "id": "opt-guard-orch", "from": "guardrail", "to": "orchestrator", "label": "screened", "variant": "security" },
+    { "id": "opt-orch-cache", "from": "orchestrator", "to": "semcache", "label": "vector lookup", "variant": "emphasis" },
+    { "id": "opt-orch-prefetch", "from": "orchestrator", "to": "prefetch", "label": "speculate", "variant": "emphasis" },
+    { "id": "opt-prefetch-ret", "from": "prefetch", "to": "retriever", "label": "warm RAG", "variant": "dashed" },
+    { "id": "opt-prefetch-tool", "from": "prefetch", "to": "sandbox", "label": "warm tool", "variant": "security" },
+    { "id": "opt-orch-llm", "from": "orchestrator", "to": "llm", "label": "cached prompt", "variant": "emphasis" },
+    { "id": "opt-ret-vec", "from": "retriever", "to": "vectordb", "label": "ANN + lexical" },
+    { "id": "opt-llm-orch", "from": "llm", "to": "orchestrator", "label": "token stream", "variant": "dashed" },
+    { "id": "opt-orch-user", "from": "orchestrator", "to": "user", "label": "SSE stream", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Fast-Path Acceleration",
+      "items": [
+        "Semantic cache serves 38% of repeat intents before LLM planning",
+        "Prompt caching trims synthesis prefill time on cache misses"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Speculative Prefetch",
+      "items": [
+        "Pre-warms top RAG chunks and sandboxed tool workers in parallel",
+        "Cuts p95 tool wait from 860 ms to 290 ms"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Zero-Trust Boundaries",
+      "items": [
+        "Guardrail screens ingress before cache or prefetch runs",
+        "Tool Sandbox stays isolated with output redaction"
+      ]
+    }
+  ]
+}

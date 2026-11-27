@@ -1,6 +1,6 @@
 # slidev-addon-archify
 
-A Slidev addon for bringing Archify diagrams and stories into presentations. This repository currently contains the addon scaffold; Archify features are not implemented yet.
+A Slidev addon for bringing Archify diagrams and stories into presentations.
 
 ## Local development
 
@@ -12,6 +12,8 @@ pnpm dev
 ```
 
 The preview deck, [`showcase/slides.md`](showcase/slides.md), loads the addon from the repository root. Run `pnpm build` to build the preview into `showcase/dist/`.
+
+The showcase keeps its source JSON in `showcase/diagrams/` and its generated HTML in `showcase/public/diagrams/`. After editing the JSON, run `pnpm diagrams` locally and commit the updated JSON and HTML together. The script uses the Archify skill installed in `.agents/skills/archify` by default; set `ARCHIFY_CLI` to use another installation. Neither `pnpm dev` nor the GitHub Pages build needs Archify installed.
 
 ## Deploy the showcase
 

@@ -93,13 +93,14 @@
           "**/.pytest_cache": true
         },
         "mypy-type-checker.importStrategy": "fromEnvironment",
-        "remote.autoForwardPorts": false
+        "remote.autoForwardPorts": true
       },
       "extensions": [
         "ms-python.python",
         "ms-python.mypy-type-checker",
         "charliermarsh.ruff",
-        "esbenp.prettier-vscode"
+        "esbenp.prettier-vscode",
+        "Vue.volar"
       ]
     }
   }

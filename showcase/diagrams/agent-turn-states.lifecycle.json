@@ -1,0 +1,34 @@
+{
+  "schema_version": 3,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Agent Turn State Machine",
+    "subtitle": "Bounded self-correction: tool retries and policy repair recover without aborting the turn",
+    "output": "agent-turn-states.html",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "animation": "trace"
+  },
+  "mainPath": ["queued", "planning", "fanout", "verifying", "streaming"],
+  "states": [
+    { "id": "queued", "type": "start", "label": "Accepted", "sublabel": "guardrail passed", "tag": "entry", "step": "01" },
+    { "id": "planning", "type": "active", "label": "Planning", "sublabel": "select tools + RAG", "tag": "model", "step": "02" },
+    { "id": "fanout", "type": "active", "label": "Fan-Out", "sublabel": "parallel gather", "tag": "work", "step": "03" },
+    { "id": "verifying", "type": "decision", "label": "Verifying", "sublabel": "grounding + PII", "tag": "gate", "step": "04" },
+    { "id": "streaming", "type": "success", "label": "Streaming", "sublabel": "cited tokens", "tag": "done", "step": "05" },
+    { "id": "retry", "type": "failure", "label": "Tool Retry", "sublabel": "backoff + fallback", "tag": "bounded" },
+    { "id": "redacted", "type": "waiting", "label": "Policy Repair", "sublabel": "strip + re-ground", "tag": "guard" },
+    { "id": "aborted", "type": "failure", "label": "Aborted", "sublabel": "budget exhausted", "tag": "terminal" }
+  ],
+  "transitions": [
+    { "id": "queued-planning", "from": "queued", "to": "planning", "label": "start" },
+    { "id": "planning-fanout", "from": "planning", "to": "fanout", "label": "plan ready" },
+    { "id": "fanout-verifying", "from": "fanout", "to": "verifying", "label": "context built" },
+    { "id": "verifying-streaming", "from": "verifying", "to": "streaming", "label": "grounded" },
+    { "id": "fanout-retry", "from": "fanout", "to": "retry", "label": "tool timeout", "variant": "security" },
+    { "id": "retry-fanout", "from": "retry", "to": "fanout", "label": "retry <= 2", "variant": "dashed" },
+    { "id": "retry-aborted", "from": "retry", "to": "aborted", "label": "exhausted", "variant": "security" },
+    { "id": "verifying-redacted", "from": "verifying", "to": "redacted", "label": "secret leak", "variant": "security" },
+    { "id": "redacted-verifying", "from": "redacted", "to": "verifying", "label": "sanitized", "variant": "dashed" }
+  ]
+}

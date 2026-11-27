@@ -211,3 +211,7 @@ __marimo__/
 # Node.js and Slidev
 node_modules/
 .slidev/
+.agents/skills/archify
+.pnpm-store
+
+skills

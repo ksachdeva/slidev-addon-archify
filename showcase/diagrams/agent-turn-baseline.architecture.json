@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AI Agent Runtime — Baseline",
+    "subtitle": "Single-turn orchestration across safety, reasoning, memory, retrieval, and sandboxed tools",
+    "output": "agent-turn-baseline.html",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "animation": "trace"
+  },
+  "components": [
+    { "id": "user", "type": "external", "label": "User", "sublabel": "Prompt + session", "pos": [40, 210], "size": [120, 56] },
+    { "id": "guardrail", "type": "security", "label": "Guardrail", "sublabel": "PII + policy gate", "pos": [210, 210], "size": [130, 56], "tag": "ingress" },
+    { "id": "orchestrator", "type": "backend", "label": "Orchestrator", "sublabel": "Agent loop", "pos": [400, 210], "size": [140, 58], "emphasis": true },
+    { "id": "llm", "type": "cloud", "label": "Reasoning LLM", "sublabel": "Frontier model", "pos": [400, 60], "size": [140, 56], "tag": "plan + synth" },
+    { "id": "memory", "type": "database", "label": "Session Memory", "sublabel": "Recent turns", "pos": [630, 60], "size": [140, 54] },
+    { "id": "retriever", "type": "backend", "label": "Hybrid Retriever", "sublabel": "Dense + BM25", "pos": [630, 210], "size": [140, 56] },
+    { "id": "vectordb", "type": "database", "label": "Vector Store", "sublabel": "HNSW index", "pos": [840, 210], "size": [130, 56], "tag": "embeddings" },
+    { "id": "sandbox", "type": "security", "label": "Tool Sandbox", "sublabel": "Isolated exec", "pos": [630, 355], "size": [140, 56], "tag": "untrusted" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Agent Control Plane", "wraps": ["guardrail", "orchestrator", "llm"] },
+    { "kind": "security-group", "label": "Context & Execution", "wraps": ["memory", "retriever", "vectordb", "sandbox"] }
+  ],
+  "connections": [
+    { "id": "user-guard", "from": "user", "to": "guardrail", "label": "prompt", "variant": "emphasis" },
+    { "id": "guard-orch", "from": "guardrail", "to": "orchestrator", "label": "screened", "variant": "security" },
+    { "id": "orch-llm", "from": "orchestrator", "to": "llm", "label": "plan call", "variant": "emphasis" },
+    { "id": "llm-plan", "from": "llm", "to": "orchestrator", "label": "tool plan", "variant": "dashed" },
+    { "id": "orch-mem", "from": "orchestrator", "to": "memory", "label": "load turns" },
+    { "id": "orch-ret", "from": "orchestrator", "to": "retriever", "label": "retrieve", "variant": "emphasis" },
+    { "id": "ret-vec", "from": "retriever", "to": "vectordb", "label": "ANN + lexical" },
+    { "id": "orch-tool", "from": "orchestrator", "to": "sandbox", "label": "run tool", "variant": "security" }
+  ]
+}
