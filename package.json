@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS=--dns-result-order=ipv4first slidev showcase/slides.md --open",
     "build": "slidev build showcase/slides.md",
-    "diagrams": "node showcase/generate-diagrams.mjs"
+    "diagrams": "ARCHIFY_CHROME_NO_SANDBOX=1 node showcase/generate-diagrams.mjs"
   },
   "devDependencies": {
     "@slidev/cli": "^53.2.0",

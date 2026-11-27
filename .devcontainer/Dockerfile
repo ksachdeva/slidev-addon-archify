@@ -3,7 +3,8 @@ FROM mcr.microsoft.com/devcontainers/python:3.14-trixie
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get upgrade -y  \
-    && apt-get -y install --no-install-recommends build-essential iputils-ping libsqlite3-dev sqlite3 \
+    && apt-get -y install --no-install-recommends \
+        build-essential chromium chromium-sandbox iputils-ping libsqlite3-dev sqlite3 \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
