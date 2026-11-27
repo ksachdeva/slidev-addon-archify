@@ -1,0 +1,25 @@
+{
+  "name": "slidev-addon-archify",
+  "version": "0.1.0",
+  "description": "A Slidev addon for Archify diagrams and stories.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ksachdeva/slidev-addon-archify.git"
+  },
+  "keywords": ["slidev-addon", "slidev", "archify"],
+  "files": ["components", "layouts", "setup"],
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "dev": "slidev showcase/slides.md --open",
+    "build": "slidev build showcase/slides.md"
+  },
+  "devDependencies": {
+    "@slidev/cli": "^53.2.0",
+    "@slidev/theme-default": "^0.25.0"
+  }
+}
