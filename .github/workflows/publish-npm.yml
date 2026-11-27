@@ -1,19 +1,19 @@
 name: Publish addon to npm
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
-    inputs:
-      publish:
-        description: Publish to npm (leave unchecked to preview package contents)
-        type: boolean
-        default: false
 
 permissions:
   contents: read
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main' && github.repository == 'ksachdeva/slidev-addon-archify'
+    if: >-
+      github.repository == 'ksachdeva/slidev-addon-archify' &&
+      ((github.event_name == 'release' && github.event.release.prerelease == false) ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,14 +21,27 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: '24'
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
+      - name: Validate release tag
+        if: github.event_name == 'release'
+        run: |
+          expected_tag="v$(node -p 'require("./package.json").version')"
+          if [[ "$GITHUB_REF_NAME" != "$expected_tag" ]]; then
+            echo "Release tag '$GITHUB_REF_NAME' must match '$expected_tag'."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo 'The release tag must point to a commit on main.'
+            exit 1
+          fi
       - name: Preview package contents
         run: npm pack --dry-run
       - name: Publish to npm with trusted publishing
-        if: inputs.publish
+        if: github.event_name == 'release'
         run: npm publish --access public
