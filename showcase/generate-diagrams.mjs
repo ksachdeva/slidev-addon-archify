@@ -22,21 +22,33 @@ const diagrams = [
   ['agent-turn-latency', 'waterfall'],
 ]
 
-// Keep validation receipts out of the public directory. Only update the deck
-// assets once every diagram has passed validation and browser checks.
+const story = 'showcase/diagrams/agent-turn-fanout.story.json'
+const explainer = 'showcase/diagrams/agent-turn-latency.archify.md'
+const outputs = [
+  ...diagrams.map(([name]) => `${name}.html`),
+  'agent-turn-fanout.stage.html',
+  'agent-turn-latency.explainer.html',
+]
+
+function runArchify(...args) {
+  execFileSync(process.execPath, [cli, ...args, '--json'], { cwd: repoRoot, stdio: 'inherit' })
+}
+
+// Publish only HTML, and only after every generation step succeeds.
 const stage = mkdtempSync(join(tmpdir(), 'archify-showcase-'))
 try {
   for (const [name, type] of diagrams) {
-    execFileSync(process.execPath, [
-      cli, 'finalize', type, `showcase/diagrams/${name}.${type}.json`,
-      join(stage, `${name}.html`), '--quality', 'showcase', '--json',
-    ], { cwd: repoRoot, stdio: 'inherit' })
+    runArchify('finalize', type, `showcase/diagrams/${name}.${type}.json`,
+      join(stage, `${name}.html`), '--quality', 'showcase')
   }
+  runArchify('story', 'validate', story)
+  runArchify('story', 'stage', story, join(stage, 'agent-turn-fanout.stage.html'), '--theme', 'dark')
+  runArchify('finalize', 'explainer', explainer, join(stage, 'agent-turn-latency.explainer.html'))
 
   const publicDiagrams = join(repoRoot, 'showcase/public/diagrams')
   mkdirSync(publicDiagrams, { recursive: true })
-  for (const [name] of diagrams) {
-    copyFileSync(join(stage, `${name}.html`), join(publicDiagrams, `${name}.html`))
+  for (const filename of outputs) {
+    copyFileSync(join(stage, filename), join(publicDiagrams, filename))
   }
 } finally {
   rmSync(stage, { recursive: true, force: true })

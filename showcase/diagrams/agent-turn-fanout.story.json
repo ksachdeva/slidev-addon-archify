@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "title": "From fan-out to grounded answer",
+  "preset": "signal-flow",
+  "loop": false,
+  "views": [
+    { "id": "fanout", "type": "dataflow", "input": "agent-turn-fanout.dataflow.json" }
+  ],
+  "steps": [
+    {
+      "view": "fanout",
+      "title": "One request, three branches",
+      "body": "See the full route from the orchestrator to the grounded answer."
+    },
+    {
+      "view": "fanout",
+      "title": "Start independent work together",
+      "body": "Load session memory, retrieve context, and run the tool concurrently.",
+      "focus": ["orchestrator", "memory", "retriever", "sandbox"],
+      "trace": { "edges": ["df-orch-mem", "df-orch-ret", "df-orch-tool"], "action": "parallel" }
+    },
+    {
+      "view": "fanout",
+      "title": "Filter, join, then answer",
+      "body": "Sanitized tool output joins memory and retrieved context before synthesis.",
+      "focus": ["policy", "context", "llm"],
+      "trace": { "edges": ["df-pol-ctx", "df-ctx-llm"], "action": "trace" }
+    }
+  ]
+}
