@@ -6,10 +6,10 @@ A [Slidev](https://sli.dev/) addon for embedding interactive Archify diagrams, c
 
 ## Installation
 
-From an existing Slidev project's directory, install the addon from GitHub. It isn't published to npm yet.
+From an existing Slidev project's directory, install the addon.
 
 ```sh
-pnpm add -D github:ksachdeva/slidev-addon-archify
+pnpm add -D slidev-addon-archify
 ```
 
 Add it to the first frontmatter block in `slides.md`. Slidev will discover the components automatically; no imports are needed.
