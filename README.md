@@ -21,6 +21,32 @@ addons:
 ---
 ```
 
+### Optional: Install the agent skill
+
+The [`slidev-archify` skill](skills/slidev-archify/SKILL.md) helps a coding agent create or update Slidev decks with Archify. It's separate from the npm addon and isn't needed to build or present a deck that already has generated HTML.
+
+**Required for agent-assisted authoring:** Install both upstream skills for the same agent before using `slidev-archify`. Skip any skill already installed.
+
+Install the Archify skill for authoring the diagram source (IR), validating it, and generating HTML: 
+
+```sh
+npx skills add tt-a1i/archify --skill archify
+```
+
+Install the Slidev skill for slide syntax, layouts, and click navigation: 
+
+```sh
+npx skills add slidevjs/slidev --skill slidev
+```
+
+From your deck's project directory, run the following and select your coding agent when prompted. Add `--global` to make the skill available across projects.
+
+```sh
+npx skills add ksachdeva/slidev-addon-archify --skill slidev-archify
+```
+
+Then ask your agent, for example: “Use `slidev-archify` to add a click-through architecture walkthrough to this deck.”
+
 ## Use the components
 
 Put your **generated Archify HTML** in `public/diagrams/` in your deck. The components embed those files from the same site as the slides. The `name` prop is the filename without the suffix shown below. You only need the Archify CLI to generate the HTML, not to build or present the deck once the files exist.

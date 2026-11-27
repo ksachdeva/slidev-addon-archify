@@ -1,6 +1,6 @@
 {
   "name": "slidev-addon-archify",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A Slidev addon for Archify diagrams and stories.",
   "type": "module",
   "license": "Apache-2.0",
